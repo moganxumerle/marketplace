@@ -41,7 +41,7 @@ public class JpaConfig {
 		properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "false");
 
 		factoryBean.setJpaProperties(properties);
-		factoryBean.setPackagesToScan("com.luizalabs.marketplace.entity");
+		factoryBean.setPackagesToScan("com.luizalabs.marketplace.model");
 
 		return factoryBean;
 	}
