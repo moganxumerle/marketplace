@@ -22,7 +22,7 @@ public class ProductService {
 		return prodRep.save(prod);
 	}
 
-	public List<ProductGroupDto> getProductGroups(List<Product> lstProd, String filter, String groupBy)
+	public List<ProductGroupDto> getProductGroups(List<Product> lstProd, String filter, String groupBy, String orderBy)
 			throws Exception {
 
 		try {
@@ -33,10 +33,12 @@ public class ProductService {
 
 				lstProd = setFilterProducts(lstProd, filter);
 				lstProdGroup = setGroupProducts(lstProd, groupBy, 0);
+				lstProdGroup = setOrderGroupProducts(lstProdGroup, orderBy);
 
 			}
 
 			return lstProdGroup;
+
 		} catch (Exception e) {
 			System.out.println("Erro ProductService - getProductGroups - " + e.getMessage());
 			throw new Exception();
@@ -81,6 +83,28 @@ public class ProductService {
 		}
 
 		return lstProdGroup;
+	}
+
+	public List<ProductGroupDto> setOrderGroupProducts(List<ProductGroupDto> lstProdGroup, String orderBy) {
+
+		List<ProductGroupDto> lstOrderedGroupProducts = new ArrayList<ProductGroupDto>();
+		List<Product> lstProd = new ArrayList<>();
+
+		for (ProductGroupDto gp : lstProdGroup) {
+
+			lstProd = gp.getItems();
+			lstProd.sort(Product.returnComparator(orderBy));
+
+			gp.setItems(lstProd);
+
+			lstOrderedGroupProducts.add(gp);
+
+		}
+
+		if (orderBy.isEmpty())
+			lstOrderedGroupProducts = setOrderGroupProducts(lstOrderedGroupProducts, "price");
+
+		return lstOrderedGroupProducts;
 	}
 
 }

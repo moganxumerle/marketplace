@@ -125,31 +125,45 @@ public class ProductServiceTest {
 		assertThat(lstProductsFiltered.size(), equalTo(2));
 
 	}
-	
+
 	@Test
 	public void should_group_products_by_ean() {
-		
+
 		List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
 		List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "group_by:ean", 0);
-		
+
 		assertThat(lstProductsGrouped.size(), equalTo(2));
 		assertThat(lstProductsGrouped.get(0).getItems().get(0).getId(), equalTo("u7042"));
 		assertThat(lstProductsGrouped.get(0).getItems().get(1).getId(), equalTo("80092"));
 		assertThat(lstProductsGrouped.get(1).getItems().get(0).getId(), equalTo("123456"));
-		
+
 	}
-	
+
 	@Test
 	public void should_group_products_by_default() {
-		
+
 		List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
 		List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "", 0);
-		
+
 		assertThat(lstProductsGrouped.size(), equalTo(2));
 		assertThat(lstProductsGrouped.get(0).getItems().get(0).getId(), equalTo("u7042"));
 		assertThat(lstProductsGrouped.get(0).getItems().get(1).getId(), equalTo("80092"));
 		assertThat(lstProductsGrouped.get(1).getItems().get(0).getId(), equalTo("123456"));
-		
+
+	}
+
+	@Test
+	public void should_order_products_by_default() {
+
+		List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
+		List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "", 0);
+		List<ProductGroupDto> lstProductsOrdered = prodServ.setOrderGroupProducts(lstProductsGrouped, "");
+
+		assertThat(lstProductsOrdered.size(), equalTo(2));
+		assertThat(lstProductsOrdered.get(0).getItems().get(0).getId(), equalTo("80092"));
+		assertThat(lstProductsOrdered.get(0).getItems().get(1).getId(), equalTo("u7042"));
+		assertThat(lstProductsOrdered.get(1).getItems().get(0).getId(), equalTo("123456"));
+
 	}
 
 }

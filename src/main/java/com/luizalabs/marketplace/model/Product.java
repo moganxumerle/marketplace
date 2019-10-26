@@ -1,7 +1,8 @@
 package com.luizalabs.marketplace.model;
 
-import java.math.BigDecimal;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.util.Comparator;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -44,21 +45,21 @@ public class Product {
 			return this.getBrand().equals(fieldValue[1]);
 
 		if (fieldValue[0].equals("price"))
-			return this.getPrice().compareTo(new BigDecimal( fieldValue[1])) == 0;
+			return this.getPrice().compareTo(new BigDecimal(fieldValue[1])) == 0;
 
 		if (fieldValue[0].equals("stock"))
 			return this.getStock().compareTo(Long.valueOf(fieldValue[1])) == 0;
 
 		return true;
-		
+
 	}
 
-	public Object returnGroupBy(String groupByFieldValue) {
+	public Object returnGroupBy(String groupByField) {
 
 		try {
 
 			for (Field f : this.getClass().getDeclaredFields()) {
-				if (groupByFieldValue.equals(f.getName()))
+				if (groupByField.equals(f.getName()))
 					return this.getClass().getMethod("get" + ucFirst(f.getName())).invoke(this);
 			}
 
@@ -69,7 +70,37 @@ public class Product {
 		}
 	}
 
-	private String[] getFieldAndValue(String fieldValue) {
+	public static Comparator<Product> returnComparator(String orderByValue) {
+
+		String[] fieldValue = getFieldAndValue(orderByValue);
+		Comparator<Product> comparatorProd = Comparator.comparing(Product::getStock);
+
+		if (fieldValue[0].equals("id"))
+			comparatorProd = Comparator.comparing(Product::getId);
+
+		if (fieldValue[0].equals("ean"))
+			comparatorProd = Comparator.comparing(Product::getEan);
+
+		if (fieldValue[0].equals("title"))
+			comparatorProd = Comparator.comparing(Product::getTitle);
+
+		if (fieldValue[0].equals("brand"))
+			comparatorProd = Comparator.comparing(Product::getBrand);
+
+		if (fieldValue[0].equals("price"))
+			comparatorProd = Comparator.comparing(Product::getPrice);
+
+		if (fieldValue[0].equals("stock"))
+			comparatorProd = Comparator.comparing(Product::getStock);
+
+		if (orderByValue.isEmpty() || (fieldValue.length > 1 && fieldValue[1].equals("desc")))
+			comparatorProd = comparatorProd.reversed();
+
+		return comparatorProd;
+
+	}
+
+	private static String[] getFieldAndValue(String fieldValue) {
 		return fieldValue.toLowerCase().split(":");
 	}
 

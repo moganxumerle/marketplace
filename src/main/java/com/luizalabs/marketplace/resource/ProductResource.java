@@ -24,7 +24,8 @@ public class ProductResource {
 	@PostMapping("/products")
 	public ResponseEntity<?> create(@RequestBody List<Product> lstProduct,
 			@RequestParam(value = "filter", defaultValue = "") String filter,
-			@RequestParam(value = "group_by", defaultValue = "") String groupBy) {
+			@RequestParam(value = "group_by", defaultValue = "") String groupBy,
+			@RequestParam(value = "order_by", defaultValue = "") String orderBy) {
 
 		ReturnModel ret = new ReturnModel();
 
@@ -32,7 +33,7 @@ public class ProductResource {
 			
 			List<Product> lstProductsSaved = prodServ.save(lstProduct);
 			
-			List<ProductGroupDto> lstProdGroup = prodServ.getProductGroups(lstProductsSaved, filter, groupBy);
+			List<ProductGroupDto> lstProdGroup = prodServ.getProductGroups(lstProductsSaved, filter, groupBy, orderBy);
 
 			ret.setData(lstProdGroup);
 
