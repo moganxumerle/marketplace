@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.luizalabs.marketplace.dto.ProductGroupDto;
 import com.luizalabs.marketplace.model.Product;
 import com.luizalabs.marketplace.repository.ProductRepository;
 
@@ -104,25 +105,51 @@ public class ProductServiceTest {
 	@Test
 	public void should_filter_one_product_by_id() {
 
-		List<Product> lstFilterProducts = new ArrayList<Product>();
+		List<Product> lstProductsFiltered = new ArrayList<Product>();
 
-		lstFilterProducts = prodServ.filterProducts(lstProdPayload, "id:80092");
+		lstProductsFiltered = prodServ.setFilterProducts(lstProdPayload, "id:80092");
 
-		assertThat(lstFilterProducts.size(), equalTo(1));
-		assertThat(lstFilterProducts.get(0).getId(), equalTo("80092"));
-		assertThat(lstFilterProducts.get(0).getBrand(), equalTo("redav"));
+		assertThat(lstProductsFiltered.size(), equalTo(1));
+		assertThat(lstProductsFiltered.get(0).getId(), equalTo("80092"));
+		assertThat(lstProductsFiltered.get(0).getBrand(), equalTo("redav"));
 
 	}
 
 	@Test
 	public void should_filter_two_products_by_ean() {
 
-		List<Product> lstFilterProducts = new ArrayList<Product>();
+		List<Product> lstProductsFiltered = new ArrayList<Product>();
 
-		lstFilterProducts = prodServ.filterProducts(lstProdPayload, "ean:7898054800492");
+		lstProductsFiltered = prodServ.setFilterProducts(lstProdPayload, "ean:7898054800492");
 
-		assertThat(lstFilterProducts.size(), equalTo(2));
+		assertThat(lstProductsFiltered.size(), equalTo(2));
 
+	}
+	
+	@Test
+	public void should_group_products_by_ean() {
+		
+		List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
+		List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "group_by:ean", 0);
+		
+		assertThat(lstProductsGrouped.size(), equalTo(2));
+		assertThat(lstProductsGrouped.get(0).getItems().get(0).getId(), equalTo("u7042"));
+		assertThat(lstProductsGrouped.get(0).getItems().get(1).getId(), equalTo("80092"));
+		assertThat(lstProductsGrouped.get(1).getItems().get(0).getId(), equalTo("123456"));
+		
+	}
+	
+	@Test
+	public void should_group_products_by_default() {
+		
+		List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
+		List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "", 0);
+		
+		assertThat(lstProductsGrouped.size(), equalTo(2));
+		assertThat(lstProductsGrouped.get(0).getItems().get(0).getId(), equalTo("u7042"));
+		assertThat(lstProductsGrouped.get(0).getItems().get(1).getId(), equalTo("80092"));
+		assertThat(lstProductsGrouped.get(1).getItems().get(0).getId(), equalTo("123456"));
+		
 	}
 
 }

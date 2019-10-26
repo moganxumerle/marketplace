@@ -2,6 +2,7 @@ package com.luizalabs.marketplace.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class ProductService {
 		return prodRep.save(prod);
 	}
 
-	public List<ProductGroupDto> getProductGroups(List<Product> lstProd, String filter) throws Exception {
+	public List<ProductGroupDto> getProductGroups(List<Product> lstProd, String filter, String groupBy)
+			throws Exception {
 
 		try {
 
@@ -29,9 +31,8 @@ public class ProductService {
 
 			if (lstProd.size() > 0) {
 
-				lstProd = filterProducts(lstProd, filter);
-
-				lstProdGroup.add(ProductGroupDto.builder().description("Filter").items(lstProd).build());
+				lstProd = setFilterProducts(lstProd, filter);
+				lstProdGroup = setGroupProducts(lstProd, groupBy, 0);
 
 			}
 
@@ -43,11 +44,43 @@ public class ProductService {
 
 	}
 
-	public List<Product> filterProducts(List<Product> lstProd, String filter) {
+	public List<Product> setFilterProducts(List<Product> lstProd, String filter) {
 
 		if (filter != null && filter != "")
 			return lstProd.stream().filter(p -> p.returnFilter(filter)).collect(Collectors.toList());
 		return lstProd;
+	}
+
+	public List<ProductGroupDto> setGroupProducts(List<Product> lstProd, String groupBy, int defaultGroupBy) {
+
+		List<ProductGroupDto> lstProdGroup = new ArrayList<ProductGroupDto>();
+
+		Map<Object, List<Product>> mapGroupProducts = lstProd.stream().collect(Collectors
+				.groupingBy(p -> p.returnGroupBy(groupBy), Collectors.mapping((Product p) -> p, Collectors.toList())));
+
+		for (Object o : mapGroupProducts.keySet()) {
+
+			if (mapGroupProducts.get(o).size() > 0) {
+
+				if (mapGroupProducts.get(o).size() > 1 || (!groupBy.isEmpty() && defaultGroupBy == 0)) {
+
+					lstProd.removeAll(mapGroupProducts.get(o));
+
+					lstProdGroup.add(ProductGroupDto.builder().description(mapGroupProducts.get(o).get(0).getTitle())
+							.items(mapGroupProducts.get(o)).build());
+				}
+			}
+		}
+
+		if (groupBy == null || groupBy.isEmpty()) {
+
+			lstProdGroup.addAll(setGroupProducts(lstProd, "title", 1));
+			lstProdGroup.forEach(g -> lstProd.removeAll(g.getItems()));
+			lstProdGroup.addAll(setGroupProducts(lstProd, "brand", 0));
+
+		}
+
+		return lstProdGroup;
 	}
 
 }

@@ -23,13 +23,16 @@ public class ProductResource {
 
 	@PostMapping("/products")
 	public ResponseEntity<?> create(@RequestBody List<Product> lstProduct,
-			@RequestParam(value = "filter", defaultValue = "") String filter) {
+			@RequestParam(value = "filter", defaultValue = "") String filter,
+			@RequestParam(value = "group_by", defaultValue = "") String groupBy) {
 
 		ReturnModel ret = new ReturnModel();
 
 		try {
-
-			List<ProductGroupDto> lstProdGroup = prodServ.getProductGroups(prodServ.save(lstProduct), filter);
+			
+			List<Product> lstProductsSaved = prodServ.save(lstProduct);
+			
+			List<ProductGroupDto> lstProdGroup = prodServ.getProductGroups(lstProductsSaved, filter, groupBy);
 
 			ret.setData(lstProdGroup);
 
