@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,9 +26,45 @@ public class ProductServiceTest {
 	@Mock
 	private ProductRepository prodRep;
 
+	private List<Product> lstProdPayload;
+
 	@Before
 	public void setUp() {
+
 		MockitoAnnotations.initMocks(this);
+
+		lstProdPayload = new ArrayList<Product>();
+		Product prod = new Product();
+		Product prod2 = new Product();
+		Product prod3 = new Product();
+
+		prod.setId("u7042");
+		prod.setEan("7898054800492");
+		prod.setTitle("Espada de fótons Nikana Azul");
+		prod.setBrand("nikana");
+		prod.setPrice(new BigDecimal("2199.90"));
+		prod.setStock(82L);
+
+		lstProdPayload.add(prod);
+
+		prod2.setId("80092");
+		prod2.setEan("7898054800492");
+		prod2.setTitle("Espada de Fótons REDAV Azul");
+		prod2.setBrand("redav");
+		prod2.setPrice(new BigDecimal("1799.90"));
+		prod2.setStock(0L);
+
+		lstProdPayload.add(prod2);
+
+		prod3.setId("123456");
+		prod3.setEan("7898054800666");
+		prod3.setTitle("Violao Branco");
+		prod3.setBrand("tonante");
+		prod3.setPrice(new BigDecimal("1000.0"));
+		prod3.setStock(10L);
+
+		lstProdPayload.add(prod3);
+
 	}
 
 	@Test
@@ -50,9 +87,8 @@ public class ProductServiceTest {
 		newProduct.setStock(82L);
 
 		when(prodRep.save(Arrays.asList(newProduct))).thenReturn(Arrays.asList(newProductInBase));
-		when(prodRep.findAll()).thenReturn(Arrays.asList(newProductInBase));
 
-		List<Product> lstProdSaved = prodServ.save( Arrays.asList(newProduct));
+		List<Product> lstProdSaved = prodServ.save(Arrays.asList(newProduct));
 
 		assertThat(lstProdSaved.size(), equalTo(1));
 		assertThat(lstProdSaved.get(0).getId(), equalTo("u7042"));
@@ -60,8 +96,32 @@ public class ProductServiceTest {
 		assertThat(lstProdSaved.get(0).getEan(), equalTo("7898054800492"));
 		assertThat(lstProdSaved.get(0).getTitle(), equalTo("Espada de fótons Nikana Azul"));
 		assertThat(lstProdSaved.get(0).getBrand(), equalTo("nikana"));
-		assertThat(lstProdSaved.get(0).getPrice(), equalTo(new BigDecimal("2199.90")));
+		assertThat(lstProdSaved.get(0).getPrice().compareTo(new BigDecimal("2199.90")), equalTo(0));
 		assertThat(lstProdSaved.get(0).getStock(), equalTo(82L));
+
+	}
+
+	@Test
+	public void should_filter_one_product_by_id() {
+
+		List<Product> lstFilterProducts = new ArrayList<Product>();
+
+		lstFilterProducts = prodServ.filterProducts(lstProdPayload, "id:80092");
+
+		assertThat(lstFilterProducts.size(), equalTo(1));
+		assertThat(lstFilterProducts.get(0).getId(), equalTo("80092"));
+		assertThat(lstFilterProducts.get(0).getBrand(), equalTo("redav"));
+
+	}
+
+	@Test
+	public void should_filter_two_products_by_ean() {
+
+		List<Product> lstFilterProducts = new ArrayList<Product>();
+
+		lstFilterProducts = prodServ.filterProducts(lstProdPayload, "ean:7898054800492");
+
+		assertThat(lstFilterProducts.size(), equalTo(2));
 
 	}
 
