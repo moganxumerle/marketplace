@@ -1,6 +1,7 @@
 package com.luizalabs.marketplace.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class ProductService {
 				lstProd = setFilterProducts(lstProd, filter);
 				lstProdGroup = setGroupProducts(lstProd, groupBy, 0);
 				lstProdGroup = setOrderGroupProducts(lstProdGroup, orderBy);
+				lstProdGroup = setDescriptionGroupProducts(lstProdGroup);
 
 			}
 
@@ -44,6 +46,14 @@ public class ProductService {
 			throw new Exception();
 		}
 
+	}
+
+	public List<ProductGroupDto> setDescriptionGroupProducts(List<ProductGroupDto> lstProdGroup) {
+		
+		lstProdGroup.forEach(g -> g.setDescriptionGroup());
+		lstProdGroup.sort(Comparator.comparing(ProductGroupDto::getDescription));
+		
+		return lstProdGroup;
 	}
 
 	public List<Product> setFilterProducts(List<Product> lstProd, String filter) {
@@ -68,7 +78,7 @@ public class ProductService {
 
 					lstProd.removeAll(mapGroupProducts.get(o));
 
-					lstProdGroup.add(ProductGroupDto.builder().description(mapGroupProducts.get(o).get(0).getTitle())
+					lstProdGroup.add(ProductGroupDto.builder().groupBy(groupBy.isEmpty() ? "ean" : groupBy)
 							.items(mapGroupProducts.get(o)).build());
 				}
 			}
