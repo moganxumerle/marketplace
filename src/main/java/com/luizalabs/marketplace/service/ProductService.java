@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,10 +50,10 @@ public class ProductService {
 	}
 
 	public List<ProductGroupDto> setDescriptionGroupProducts(List<ProductGroupDto> lstProdGroup) {
-		
+
 		lstProdGroup.forEach(g -> g.setDescriptionGroup());
 		lstProdGroup.sort(Comparator.comparing(ProductGroupDto::getDescription));
-		
+
 		return lstProdGroup;
 	}
 
@@ -66,6 +67,10 @@ public class ProductService {
 	public List<ProductGroupDto> setGroupProducts(List<Product> lstProd, String groupBy, int defaultGroupBy) {
 
 		List<ProductGroupDto> lstProdGroup = new ArrayList<ProductGroupDto>();
+
+		if (groupBy.toLowerCase().equals("title")) {
+			setIdTitleSimilarityProducts(lstProd);
+		}
 
 		Map<Object, List<Product>> mapGroupProducts = lstProd.stream().collect(Collectors
 				.groupingBy(p -> p.returnGroupBy(groupBy), Collectors.mapping((Product p) -> p, Collectors.toList())));
@@ -115,6 +120,31 @@ public class ProductService {
 			lstOrderedGroupProducts = setOrderGroupProducts(lstOrderedGroupProducts, "price");
 
 		return lstOrderedGroupProducts;
+	}
+	
+	private void setIdTitleSimilarityProducts(List<Product> lstProd) {
+
+		List<Product> lstProdAux = new ArrayList<>(lstProd);
+
+		for (Product p : lstProd) {
+
+			if (p.getIdSimilarTitle() == null) {
+
+				for (Product x : lstProdAux) {
+					if (isSimilarTitle(p.getTitle(), x.getTitle()))
+						x.setIdSimilarTitle(p.getId());
+				}
+			}
+		}
+	}
+
+	private static boolean isSimilarTitle(String titleBase, String titleTarget) {
+
+		// Define 10% de tolerância entre diferenca de similaridade
+		final int threshold = Math.round(0.25f * titleBase.length());
+		final LevenshteinDistance levenshteinDistance = new LevenshteinDistance(threshold);
+		return levenshteinDistance.apply(titleBase, titleTarget) != -1;
+
 	}
 
 }

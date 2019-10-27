@@ -165,12 +165,12 @@ public class ProductServiceTest {
 		assertThat(lstProductsOrdered.get(1).getItems().get(0).getId(), equalTo("123456"));
 
 	}
-	
+
 	@Test
 	public void should_set_description_group_products_by_brand() {
 
 		List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
-		
+
 		Product prod4 = new Product();
 
 		prod4.setId("u7044");
@@ -180,27 +180,51 @@ public class ProductServiceTest {
 		prod4.setPrice(new BigDecimal("2000.00"));
 		prod4.setStock(10L);
 		lstProd.add(prod4);
-		
+
 		List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "brand", 0);
 		List<ProductGroupDto> lstProductsOrdered = prodServ.setOrderGroupProducts(lstProductsGrouped, "stock:asc");
-		List<ProductGroupDto> lstGroupProductsWithDescription = prodServ.setDescriptionGroupProducts(lstProductsOrdered);
+		List<ProductGroupDto> lstGroupProductsWithDescription = prodServ
+				.setDescriptionGroupProducts(lstProductsOrdered);
 
 		assertThat(lstGroupProductsWithDescription.size(), equalTo(3));
-		
+
 		System.out.println(lstGroupProductsWithDescription);
-		
+
 		assertThat(lstGroupProductsWithDescription.get(0).getDescription(), equalTo("nikana"));
 		assertThat(lstGroupProductsWithDescription.get(0).getItems().size(), equalTo(2));
 		assertThat(lstGroupProductsWithDescription.get(0).getItems().get(0).getId(), equalTo("u7044"));
 		assertThat(lstGroupProductsWithDescription.get(0).getItems().get(1).getId(), equalTo("u7042"));
-		
+
 		assertThat(lstGroupProductsWithDescription.get(1).getDescription(), equalTo("redav"));
 		assertThat(lstGroupProductsWithDescription.get(1).getItems().size(), equalTo(1));
 		assertThat(lstGroupProductsWithDescription.get(1).getItems().get(0).getId(), equalTo("80092"));
-		
+
 		assertThat(lstGroupProductsWithDescription.get(2).getDescription(), equalTo("tonante"));
 		assertThat(lstGroupProductsWithDescription.get(2).getItems().size(), equalTo(1));
 		assertThat(lstGroupProductsWithDescription.get(2).getItems().get(0).getId(), equalTo("123456"));
+
+	}
+
+	@Test
+	public void should_group_products_by_similarity_title() {
+
+		List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
+
+		List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "title", 0);
+		List<ProductGroupDto> lstProductsOrdered = prodServ.setOrderGroupProducts(lstProductsGrouped, "id:asc");
+		lstProductsOrdered = prodServ.setDescriptionGroupProducts(lstProductsOrdered);
+
+		assertThat(lstProductsOrdered.size(), equalTo(2));
+		
+		System.out.println(lstProductsOrdered.get(0));
+		assertThat(lstProductsOrdered.get(0).getDescription(), equalTo("Espada de Fótons REDAV Azul"));
+		assertThat(lstProductsOrdered.get(0).getItems().size(), equalTo(2));
+		assertThat(lstProductsOrdered.get(0).getItems().get(0).getId(), equalTo("80092"));
+		assertThat(lstProductsOrdered.get(0).getItems().get(1).getId(), equalTo("u7042"));
+
+		assertThat(lstProductsOrdered.get(1).getDescription(), equalTo("Violao Branco"));
+		assertThat(lstProductsOrdered.get(1).getItems().size(), equalTo(1));
+		assertThat(lstProductsOrdered.get(1).getItems().get(0).getId(), equalTo("123456"));
 
 	}
 

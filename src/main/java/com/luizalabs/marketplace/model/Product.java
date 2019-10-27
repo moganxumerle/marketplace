@@ -6,6 +6,9 @@ import java.util.Comparator;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,6 +27,10 @@ public class Product {
 	private String brand;
 	private BigDecimal price;
 	private Long stock;
+
+	@JsonIgnore
+	@Transient
+	private String idSimilarTitle;
 
 	public boolean returnFilter(String filterFieldValue) {
 
@@ -59,8 +66,12 @@ public class Product {
 		try {
 
 			for (Field f : this.getClass().getDeclaredFields()) {
-				if (groupByField.equals(f.getName()))
+				if (groupByField.toLowerCase().equals(f.getName())
+						&& !f.getName().toLowerCase().equals("idsimilartitle")) {
+					if (f.getName().equals("title"))
+						return this.getClass().getMethod("getIdSimilarTitle").invoke(this);
 					return this.getClass().getMethod("get" + ucFirst(f.getName())).invoke(this);
+				}
 			}
 
 			return this.getEan();

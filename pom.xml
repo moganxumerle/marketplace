@@ -88,6 +88,12 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- Apache Commons - Similarity -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
