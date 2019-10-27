@@ -188,8 +188,6 @@ public class ProductServiceTest {
 
 		assertThat(lstGroupProductsWithDescription.size(), equalTo(3));
 
-		System.out.println(lstGroupProductsWithDescription);
-
 		assertThat(lstGroupProductsWithDescription.get(0).getDescription(), equalTo("nikana"));
 		assertThat(lstGroupProductsWithDescription.get(0).getItems().size(), equalTo(2));
 		assertThat(lstGroupProductsWithDescription.get(0).getItems().get(0).getId(), equalTo("u7044"));
@@ -216,7 +214,6 @@ public class ProductServiceTest {
 
 		assertThat(lstProductsOrdered.size(), equalTo(2));
 		
-		System.out.println(lstProductsOrdered.get(0));
 		assertThat(lstProductsOrdered.get(0).getDescription(), equalTo("Espada de Fótons REDAV Azul"));
 		assertThat(lstProductsOrdered.get(0).getItems().size(), equalTo(2));
 		assertThat(lstProductsOrdered.get(0).getItems().get(0).getId(), equalTo("80092"));

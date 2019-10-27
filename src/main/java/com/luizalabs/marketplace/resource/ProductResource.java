@@ -22,7 +22,7 @@ public class ProductResource {
 	private ProductService prodServ;
 
 	@PostMapping("/products")
-	public ResponseEntity<?> create(@RequestBody List<Product> lstProduct,
+	public ResponseEntity<?> create(@RequestBody(required = false) List<Product> lstProduct,
 			@RequestParam(value = "filter", defaultValue = "") String filter,
 			@RequestParam(value = "group_by", defaultValue = "") String groupBy,
 			@RequestParam(value = "order_by", defaultValue = "") String orderBy) {
@@ -30,6 +30,9 @@ public class ProductResource {
 		ReturnModel ret = new ReturnModel();
 
 		try {
+			
+			if (lstProduct == null) 
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payload de produtos não informado!");
 			
 			List<Product> lstProductsSaved = prodServ.save(lstProduct);
 			
