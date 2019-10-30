@@ -224,5 +224,31 @@ public class ProductServiceTest {
 		assertThat(lstProductsOrdered.get(1).getItems().get(0).getId(), equalTo("123456"));
 
 	}
+	
+	@Test
+	public void should_order_products_by_brand_desc() {
+
+	  List<Product> lstProd = new ArrayList<Product>(lstProdPayload);
+	  Product prod4 = new Product();
+
+	  prod4.setId("987654");
+	  prod4.setEan("7898054800666");
+	  prod4.setTitle("Violao Azul");
+	  prod4.setBrand("Giannini");
+	  prod4.setPrice(new BigDecimal("850.00"));
+	  prod4.setStock(3L);
+	  lstProd.add(prod4);
+	  
+	  
+	  List<ProductGroupDto> lstProductsGrouped = prodServ.setGroupProducts(lstProd, "", 0);
+	  List<ProductGroupDto> lstProductsOrdered = prodServ.setOrderGroupProducts(lstProductsGrouped, "brand:desc");
+
+	  assertThat(lstProductsOrdered.size(), equalTo(2));
+	  assertThat(lstProductsOrdered.get(0).getItems().get(0).getId(), equalTo("80092"));
+	  assertThat(lstProductsOrdered.get(0).getItems().get(1).getId(), equalTo("u7042"));
+	  assertThat(lstProductsOrdered.get(1).getItems().get(0).getId(), equalTo("123456"));
+	  assertThat(lstProductsOrdered.get(1).getItems().get(1).getId(), equalTo("987654"));
+
+	}
 
 }

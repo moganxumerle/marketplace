@@ -140,7 +140,7 @@ public class ProductService {
 
 	private static boolean isSimilarTitle(String titleBase, String titleTarget) {
 
-		// Define 10% de tolerância entre diferenca de similaridade
+		// Define 25% de tolerância entre diferenca de similaridade
 		final int threshold = Math.round(0.25f * titleBase.length());
 		final LevenshteinDistance levenshteinDistance = new LevenshteinDistance(threshold);
 		return levenshteinDistance.apply(titleBase, titleTarget) != -1;
